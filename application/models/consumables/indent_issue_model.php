@@ -203,12 +203,11 @@ class Indent_issue_model extends CI_Model{                                      
 				$notes = $this->input->post('note_'.$i);
 				$gtins = $this->input->post('gtin_'.$i);
 				log_message("info", "SAIRAM :=> ".json_encode($this->input->post(NULL, TRUE)));
-				// foreach($this->input->post("quantity_".$i) as $q){
-				// 	log_message("info", "SAIRAM $q");
-				// }
+				 
 				for($j = 0; $j < count($this->input->post("quantity_".$i)); $j++){
 					array_push($data_inventory_in, array(
 						'inward_outward' => 'inward', 
+						'itemwise_sr_no' => ($j + 1), 
 						'supply_chain_party_id' => $this->input->post('from_party_id'), 
 						'item_id' => $this->input->post("item_id_$i"), 
 						'quantity' => $quantities[$j], 
@@ -226,6 +225,7 @@ class Indent_issue_model extends CI_Model{                                      
 					));
 					array_push($data_inventory_out, array(
 						'inward_outward' => 'outward', 
+						'itemwise_sr_no' => ($j + 1), 
 						'supply_chain_party_id' => $this->input->post('to_party_id'), 
 						'item_id' => $this->input->post("item_id_$i"), 
 						'quantity' => $quantities[$j], 
@@ -246,12 +246,12 @@ class Indent_issue_model extends CI_Model{                                      
 			log_message("info", json_encode($data_inventory_in));
 			log_message("info", json_encode($data_inventory_out));
 			$data_d=array(                                                                          //Set indent_status as Issued in indent table
-				'indent_status'=>'Issued', 
+				'indent_status' => 'Issued', 
 				'update_user_id' => $staff->staff_id,     
 				'note' => $this->input->post('indent_note') ? $this->input->post('indent_note'): ""
 			);
 			$array=array(                                                                           //get staff_id in an array
-                    'issuer_id'=>$staff->staff_id
+                'issuer_id'=>$staff->staff_id
 			);
 			$this->db->trans_start();
 			$this->db->update_batch('indent_item',$data,'indent_item_id');                         //all these are update queries to store values in arrays into database

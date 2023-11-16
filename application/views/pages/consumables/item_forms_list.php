@@ -103,7 +103,7 @@ function printDiv(i)
 				echo validation_errors();
 				if (isset($msg)) { ?>
 				<div class="alert alert-info"><?php echo $msg; ?></div><?php } ?>
-				<h3>Item</h3></center><br>
+				<h3>Item Form</h3></center><br>
 			<center>
 				<?php echo form_open('consumables/item_form/item_forms_list', array('class' => 'form-group', 'role' => 'form', 'id' => 'item_forms_search')); ?>
 				<div class="container">

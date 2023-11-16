@@ -161,3 +161,14 @@ ALTER TABLE `patient_followup` ADD `add_by` INT AFTER `map_link`, ADD `add_time`
 ALTER TABLE `patient_followup` CHANGE `longitude` `longitude` DOUBLE;
 ALTER TABLE `patient_followup` CHANGE `latitude` `latitude` DOUBLE;
 ALTER TABLE `patient_followup` CHANGE `life_status` `life_status` TINYINT(4) NOT NULL COMMENT '\'0\' - death \'1\' - Alive \'2\' - No follow up';
+
+
+-- added for SCP module - inventory table for practical reasons
+-- main reason to add this is that cannot fetch specific item to edit when different instances of the same item present in the same indent.
+ALTER TABLE `inventory` ADD `itemwise_sr_no` INT NOT NULL AFTER `inventory_id`; 
+
+
+-- cost should be able to have null values to distinguish between donations and costs which haven't been filled yet.
+ALTER TABLE `inventory` CHANGE `cost` `cost` FLOAT NULL; 
+
+

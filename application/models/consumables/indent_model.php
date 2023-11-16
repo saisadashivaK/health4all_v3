@@ -107,7 +107,8 @@ class Indent_model extends CI_Model
 
 				for ($j = 0; $j < count($this->input->post("quantity_" . $item[$i])); $j++) {
 					array_push($data_inventory_in, array(
-						'inward_outward' => 'inward',
+						'inward_outward' => 'inward', 
+						'itemwise_sr_no' => ($j + 1), 
 						'supply_chain_party_id' => $this->input->post('from_id'),
 						'item_id' => $item[$i],
 						'quantity' => $quantities[$j],
@@ -125,7 +126,8 @@ class Indent_model extends CI_Model
 					)
 					);
 					array_push($data_inventory_out, array(
-						'inward_outward' => 'outward',
+						'inward_outward' => 'outward', 
+						'itemwise_sr_no' => ($j + 1), 
 						'supply_chain_party_id' => $this->input->post('to_id'),
 						'item_id' => $item[$i],
 						'quantity' => $quantities[$j],
