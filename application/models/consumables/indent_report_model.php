@@ -223,7 +223,7 @@ class Indent_report_model extends CI_Model
 
 		
 
-		$this->db->select("item.item_name, item.item_id, item_type.item_type, scp_from.supply_chain_party_name from_party, scp_to.supply_chain_party_name to_party, scp.supply_chain_party_name, scp.supply_chain_party_id, inventory.inward_outward, inventory.date_time, inventory.batch, inventory.manufacture_date, inventory.expiry_date, inventory.quantity total_quantity, inventory.cost, inventory.gtin_code, inventory.patient_id, inventory.indent_id, inventory.note")
+		$this->db->select("inventory.inventory_id, inventory.itemwise_sr_no, item.item_name, item.item_id, item_type.item_type, scp_from.supply_chain_party_name from_party, scp_to.supply_chain_party_name to_party, scp.supply_chain_party_name, scp.supply_chain_party_id, inventory.inward_outward, inventory.date_time, inventory.batch, inventory.manufacture_date, inventory.expiry_date, inventory.quantity total_quantity, inventory.cost, inventory.gtin_code, inventory.patient_id, inventory.indent_id, inventory.note")
 		->from('inventory')
 		->join('item', 'item.item_id = inventory.item_id') //remove left later
 		->join('supply_chain_party scp', 'scp.supply_chain_party_id = inventory.supply_chain_party_id') // remove left later for only relevant details
@@ -234,7 +234,9 @@ class Indent_report_model extends CI_Model
 		->join('item_type', 'generic_item.item_type_id = item_type.item_type_id', 'left')
 		->where('indent.hospital_id', $hospital['hospital_id'])
 		->where('item.item_id', $item_id)
-		->where('inventory.supply_chain_party_id', $scp_id);
+		->where('inventory.supply_chain_party_id', $scp_id)
+		->order_by('inventory.indent_id, inventory.itemwise_sr_no');
+
 		// ->where('inventory.batch <> 0')
 		// ->group_by('inventory.item_id, inventory.supply_chain_party_id, inventory.inward_outward, inventory.batch');
 		
@@ -247,7 +249,135 @@ class Indent_report_model extends CI_Model
 		$final_result = $this->get_inward_outward_summary($records, "item");
 		return $records;
 	}
+	function get_item_summary_edit($item_id, $scp_id)
+	{
+		$hospital=$this->session->userdata('hospital');                                                //Storing user data who logged into the hospital into a var:hospital
 
+
+
+		
+
+		$this->db->select("inventory.inventory_id, inventory.itemwise_sr_no, item.item_name, 
+		item.item_id, item_type.item_type, 
+		scp_from.supply_chain_party_name from_party, scp_to.supply_chain_party_name to_party, 
+		scp.supply_chain_party_name, scp.supply_chain_party_id, inventory.inward_outward, 
+		inventory.date_time, inventory.batch, inventory.manufacture_date, 
+		inventory.expiry_date, inventory.quantity total_quantity, inventory.cost, 
+		inventory.gtin_code, inventory.patient_id, inventory.indent_id, inventory.note")
+		->from('inventory')
+		->join('item', 'item.item_id = inventory.item_id') //remove left later
+		->join('supply_chain_party scp', 'scp.supply_chain_party_id = inventory.supply_chain_party_id') // remove left later for only relevant details
+		->join('indent', 'indent.indent_id = inventory.indent_id') // remove left later for only relevant details
+		->join('supply_chain_party scp_from', 'scp_from.supply_chain_party_id = indent.from_id')
+		->join('supply_chain_party scp_to', 'scp_to.supply_chain_party_id = indent.to_id')
+		->join('generic_item', 'generic_item.generic_item_id = item.generic_item_id', 'left')
+		->join('item_type', 'generic_item.item_type_id = item_type.item_type_id', 'left')
+		->where('indent.hospital_id', $hospital['hospital_id'])
+		->where('item.item_id', $item_id)
+		->where('inventory.supply_chain_party_id', $scp_id)
+		->where('inventory.inward_outward', 'inward')
+		->order_by('inventory.indent_id, inventory.itemwise_sr_no');
+
+		// ->where('inventory.batch <> 0')
+		// ->group_by('inventory.item_id, inventory.supply_chain_party_id, inventory.inward_outward, inventory.batch');
+		
+
+
+		$query = $this->db->get();
+		$query_string = $this->db->last_query();
+		log_message("info", $query_string);
+		$records = $query->result();
+		// $final_result = $this->get_inward_outward_summary($records, "item");
+		return $records;
+	}
+	function get_inventory_item($inventory_id)
+	{
+		$hospital=$this->session->userdata('hospital');                                                //Storing user data who logged into the hospital into a var:hospital
+
+
+
+		
+
+		$this->db->select("inventory.inventory_id, inventory.itemwise_sr_no, item.item_name, item.item_id, item_type.item_type, scp_from.supply_chain_party_name from_party, scp_to.supply_chain_party_name to_party, scp.supply_chain_party_name, scp.supply_chain_party_id, inventory.inward_outward, inventory.date_time, inventory.batch, inventory.manufacture_date mfg_date, inventory.expiry_date, inventory.quantity total_quantity, inventory.cost, inventory.gtin_code, inventory.patient_id, inventory.indent_id, inventory.note")
+		->from('inventory')
+		->join('item', 'item.item_id = inventory.item_id') //remove left later
+		->join('supply_chain_party scp', 'scp.supply_chain_party_id = inventory.supply_chain_party_id') // remove left later for only relevant details
+		->join('indent', 'indent.indent_id = inventory.indent_id') // remove left later for only relevant details
+		->join('supply_chain_party scp_from', 'scp_from.supply_chain_party_id = indent.from_id')
+		->join('supply_chain_party scp_to', 'scp_to.supply_chain_party_id = indent.to_id')
+		->join('generic_item', 'generic_item.generic_item_id = item.generic_item_id', 'left')
+		->join('item_type', 'generic_item.item_type_id = item_type.item_type_id', 'left')
+		->where('indent.hospital_id', $hospital['hospital_id'])
+		->where('inventory.inventory_id', $inventory_id);
+		
+		
+
+
+		$query = $this->db->get();
+		$query_string = $this->db->last_query();
+		log_message("info", $query_string);
+		$records = $query->result();
+		
+		return $records;
+	}
+
+	function edit_inventory_item($indent_id, $item_id, $itemwise_sr_no, $oldvalues)
+	{
+		$this->db->trans_start();
+		$tbedited = array();
+		if(!isset($oldvalues->mfg_date) || strtotime($oldvalues->mfg_date) != strtotime($this->input->post('mfg_date')))
+			if($this->input->post('mfg_date'))
+				$tbedited['manufacture_date'] = date("Y-m-d H:i:s", strtotime($this->input->post('mfg_date')));
+		
+		if(!isset($oldvalues->expiry_date) || strtotime($oldvalues->expiry_date) != strtotime($this->input->post('expiry_date')))
+			if($this->input->post('expiry_date'))
+				$tbedited['expiry_date'] = date("Y-m-d H:i:s", strtotime($this->input->post('expiry_date')));
+		
+		if(!isset($oldvalues->batch) || $oldvalues->batch !== $this->input->post('batch'))
+			if($this->input->post('batch'))
+				$tbedited['batch'] = $this->input->post('batch');
+		
+		if(!isset($oldvalues->note) || $oldvalues->note !== $this->input->post('note'))
+			if($this->input->post('note'))
+				$tbedited['note'] = $this->input->post('note');
+		
+		if(!isset($oldvalues->gtin_code) || $oldvalues->gtin_code !== $this->input->post('gtin_code'))
+			if($this->input->post('gtin_code'))
+				$tbedited['gtin_code'] = $this->input->post('gtin_code');
+		
+		if(!isset($oldvalues->patient_id) || $oldvalues->patient_id !== $this->input->post('patient_id'))
+			if($this->input->post('patient_id'))
+				$tbedited['patient_id'] = $this->input->post('patient_id');
+		
+		if(!isset($oldvalues->cost) || $oldvalues->cost !== $this->input->post('cost'))
+			if($this->input->post('cost'))
+				$tbedited['cost'] = $this->input->post('cost');
+		
+		
+		log_message('info', "SAIRAM: srno ". $itemwise_sr_no); 
+		log_message('info', "SAIRAM: updating using ". json_encode($tbedited));
+		
+		log_message('info', "SAIRAM: updating query ");
+		if(count($tbedited) > 0){
+			$this->db->where('inventory.indent_id', $indent_id);
+			$this->db->where('inventory.item_id', $item_id);
+			$this->db->where('inventory.itemwise_sr_no', $itemwise_sr_no);
+
+			$this->db->update('inventory', $tbedited);
+		}else{
+			
+			// ->reset_query();
+			return;
+		}
+		
+
+		
+		$this->db->trans_complete();
+		log_message('info', "SAIRAM not executing query finished");
+
+		
+		
+	}
 	function get_inventory_item_detailed($from_date = 0, $to_date = 0, $from_party = 0, $to_party = 0, $item_type = -1, $item_name = -1)
 	{
 		$hospital=$this->session->userdata('hospital');                                                //Storing user data who logged into the hospital into a var:hospital

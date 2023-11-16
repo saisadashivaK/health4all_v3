@@ -245,6 +245,17 @@
 
 							</div> -->
 						</div>
+						<div class="panel <?php echo activate_navbar_main_list("^inventory_item/*^") ?>" id="edit">
+							<div class="panel-heading">
+
+								<h4 class="panel-title">
+									<a href="<?php echo base_url(); ?>consumables/inventory_item/edit_inventory_item_list">Edit Inventory Item</a>
+								</h4>
+							</div>
+							<!-- <div class="panel-body">
+
+							</div> -->
+						</div>
 
 
 					<?php
